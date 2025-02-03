@@ -1715,12 +1715,12 @@ static void SaveDefaultCollection(default_collection_t *collection)
 
 static int ParseIntParameter(char *strparm)
 {
-    int parm;
+    int parm = atoi(strparm);
 
-    if (strparm[0] == '0' && strparm[1] == 'x')
-        sscanf(strparm+2, "%x", &parm);
-    else
-        sscanf(strparm, "%i", &parm);
+//    if (strparm[0] == '0' && strparm[1] == 'x')
+//        sscanf(strparm+2, "%x", &parm);
+//    else
+//        sscanf(strparm, "%i", &parm);
 
     return parm;
 }
@@ -1763,7 +1763,9 @@ static void SetVariable(default_t *def, char *value)
             break;
 
         case DEFAULT_FLOAT:
-            * (float *) def->location = (float) atof(value);
+            fprintf(stderr, "Cannot atof!\n");
+            abort();
+            //* (float *) def->location = (float) atof(value);
             break;
     }
 }

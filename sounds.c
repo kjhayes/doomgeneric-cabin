@@ -19,7 +19,7 @@
 
 
 #include <stdlib.h>
-
+#include <stddef.h>
 
 #include "doomtype.h"
 #include "sounds.h"

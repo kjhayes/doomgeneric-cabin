@@ -57,7 +57,8 @@ void M_MakeDirectory(char *path)
 #ifdef _WIN32
     mkdir(path);
 #else
-    mkdir(path, 0755);
+    fprintf(stderr, "Warning: Cannot mkdir \"%s\"\n", path);
+    //mkdir(path, 0755);
 #endif
 }
 
@@ -189,10 +190,12 @@ char *M_TempFile(char *s)
 
 boolean M_StrToInt(const char *str, int *result)
 {
-    return sscanf(str, " 0x%x", result) == 1
-        || sscanf(str, " 0X%x", result) == 1
-        || sscanf(str, " 0%o", result) == 1
-        || sscanf(str, " %d", result) == 1;
+    *result = atoi(str);
+    return 1;
+//    return sscanf(str, " 0x%x", result) == 1
+//        || sscanf(str, " 0X%x", result) == 1
+//        || sscanf(str, " 0%o", result) == 1
+//        || sscanf(str, " %d", result) == 1;
 }
 
 void M_ExtractFileBase(char *path, char *dest)

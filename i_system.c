@@ -271,6 +271,9 @@ void I_Quit (void)
 
 static int ZenityAvailable(void)
 {
+    if(system(NULL) == 0) {
+        return 0;
+    }
     return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
 }
 
