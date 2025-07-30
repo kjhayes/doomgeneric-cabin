@@ -28,7 +28,7 @@ static fd_t kbd_file;
 
 void DG_Init(void) {
     // TODO
-    //printf("DG_Init\n");
+    printf("DG_Init\n");
 }
 
 //static inline uint16_t
@@ -329,12 +329,16 @@ void DG_DrawFrame(void) {
         .resx = DOOMGENERIC_RESX,
         .resy = DOOMGENERIC_RESY,
         .order = FB_LAYER_ORDER_ROW_MAJOR,
-        .format = FB_LAYER_FORMAT_BGRA32,
+        .format = FB_LAYER_FORMAT_RGBA32,
         .offset = 0,
         .stride = 4,
         .data_size = DOOMGENERIC_RESX*DOOMGENERIC_RESY*4,
     };
 
+    printf("Drawing Frame (width=%lu,height=%lu)\n",
+            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].width,
+            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].height
+            );
     res = kfb_blit_image_onto_layer(
             kfb_buffer,
             0,
@@ -492,8 +496,8 @@ int main(int argc, char **argv)
 {
     int res;
 
-    if(argc != 3) {
-        fprintf(stderr, "Usage: doomgeneric [VGA-FB-PATH] [KBD-PATH]\n");
+    if(argc < 3) {
+        fprintf(stderr, "Usage: doomgeneric [FB-PATH] [KBD-PATH] [doomgeneric args...]\n");
         exit(-1);
     }
 
@@ -505,7 +509,13 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
+    if(!kfb_buffer->have_buffer_data) {
+        fprintf(stderr, "Failed to open framebuffer \"%s\" (kfb missing buffer data)!\n", fb_path);
+        exit(-1);
+    }
+
     kfb_framebuffer_mode = kfb_get_current_mode(kfb_buffer);
+    printf("Opened Framebuffer \"%s\" in mode %d\n", fb_path, (int)kfb_framebuffer_mode);
 
     const char *kbd_path = argv[2];
 
@@ -518,6 +528,10 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to open \"%s\"\n", kbd_path);
         exit(-1);
     }
+
+    // Remove the fb and kbd arguments
+    argc -= 2;
+    memcpy(&argv[1], &argv[3], sizeof(const char *) * (argc-1));
 
     doomgeneric_Create(argc, argv);
 

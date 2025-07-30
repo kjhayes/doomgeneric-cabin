@@ -210,6 +210,7 @@ wad_file_t *W_AddFile (char *filename)
     ExtendLumpInfo(newnumlumps);
 
     lump_p = &lumpinfo[startlump];
+    printf("lump_p=%p\n",lump_p);
 
     filerover = fileinfo;
 

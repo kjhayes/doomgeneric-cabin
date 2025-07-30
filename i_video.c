@@ -168,6 +168,7 @@ void cmap_to_fb(uint8_t * out, uint8_t * in, int in_pixels)
         pix = r << s_Fb.red.offset;
         pix |= g << s_Fb.green.offset;
         pix |= b << s_Fb.blue.offset;
+        pix |= ((1ULL<<s_Fb.transp.length)-1) << s_Fb.transp.offset;
 
         for (k = 0; k < fb_scaling; k++) {
             for (j = 0; j < s_Fb.bits_per_pixel/8; j++) {
@@ -202,9 +203,9 @@ void I_InitGraphics (void)
 	s_Fb.red.length = 8;
 	s_Fb.transp.length = 8;
 
-	s_Fb.blue.offset = 0;
+	s_Fb.red.offset = 0;
 	s_Fb.green.offset = 8;
-	s_Fb.red.offset = 16;
+	s_Fb.blue.offset = 16;
 	s_Fb.transp.offset = 24;
 	
 #endif  // CMAP256
