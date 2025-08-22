@@ -8,7 +8,7 @@
 #include <kanawha/kbd.h>
 #include <kanawha/time.h>
 #include <kanawha/sys-wrappers.h>
-#include <kanawha/kfb.h>
+#include <kfb/kfb.h>
 
 static int kfb_framebuffer_mode;
 static struct kfb_framebuffer *kfb_buffer = NULL;
@@ -328,28 +328,32 @@ void DG_DrawFrame(void) {
         .data = (void*)DG_ScreenBuffer,
         .resx = DOOMGENERIC_RESX,
         .resy = DOOMGENERIC_RESY,
-        .order = FB_LAYER_ORDER_ROW_MAJOR,
-        .format = FB_LAYER_FORMAT_RGBA32,
+        .order = GFX_ORDER_ROW_MAJOR,
+        .format = GFX_FORMAT_RGBA32,
         .offset = 0,
         .stride = 4,
         .data_size = DOOMGENERIC_RESX*DOOMGENERIC_RESY*4,
     };
 
+    /*
     printf("Drawing Frame (width=%lu,height=%lu)\n",
-            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].width,
-            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].height
+            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].layout.width,
+            (unsigned long)kfb_buffer->current_mode_info->layer_infos[0].layout.height
             );
-    res = kfb_blit_image_onto_layer(
-            kfb_buffer,
-            0,
-            &img,
-            0, 0,
-            kfb_buffer->current_mode_info->layer_infos[0].width,
-            kfb_buffer->current_mode_info->layer_infos[0].height
-            );
-    if(res) {
-        fprintf(stderr, "Failed to blit frame! err=%d\n", res);
-        return;
+	    */
+    for(size_t layer = 0; layer < kfb_buffer->current_mode_info->layer_count; layer++) {
+        res = kfb_blit_image_onto_layer(
+                kfb_buffer,
+                layer,
+                &img,
+                0, 0,
+                kfb_buffer->current_mode_info->layer_infos[layer].layout.width,
+                kfb_buffer->current_mode_info->layer_infos[layer].layout.height
+                );
+        if(res) {
+            fprintf(stderr, "Failed to blit frame! err=%d\n", res);
+            return;
+        }
     }
 
     res = kfb_flush_framebuffer(kfb_buffer);
@@ -427,6 +431,7 @@ doomKeyFromKbdKey(kbd_key_t key) {
         case KBD_KEY_F10: return KEY_F10;
         case KBD_KEY_F11: return KEY_F11;
         case KBD_KEY_F12: return KEY_F12;
+	case KBD_KEY_ESCAPE: return KEY_ESCAPE;
         case KBD_KEY_BACKSPACE: return KEY_BACKSPACE;
         case KBD_KEY_SPACE: return KEY_FIRE;
         case KBD_KEY_ENTER: return KEY_ENTER;
